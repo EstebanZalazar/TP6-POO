@@ -3,8 +3,10 @@ import java.awt.event.*;
 
 public class calculadora extends Frame implements ActionListener {
     public calculadora(){
+        //Título del Frame y tipo de layouta
         setTitle("Calculadora");
         setLayout(new GridBagLayout());
+        //Código para modificar manualmente los botones en el layout
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH; // Expande los botones para llenar la celda
         gbc.weightx = 1.0; //Escala en la que se expanden los botones en eje x
@@ -23,7 +25,7 @@ public class calculadora extends Frame implements ActionListener {
         gbc.gridx = 4;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
-        add(new Button("←"), gbc);
+        add(new Button("<<"), gbc);
         //Uso una grilla de 4x5 para el resto de los botones
         String[][] botones = {
             {"7", "8", "9", "/", "CE"},
@@ -42,7 +44,7 @@ public class calculadora extends Frame implements ActionListener {
                     gbc.gridwidth = 1;
                     gbc.gridheight = 1;
 
-                    // Casos especiales
+                    // Casos especialesn del 0 y el =
                     if (etiqueta.equals("=")) {
                         gbc.gridheight = 2; // "=" ocupa 2 filas
                     } else if (etiqueta.equals("0")) {
@@ -50,8 +52,11 @@ public class calculadora extends Frame implements ActionListener {
                     }
 
                     add(boton, gbc);
+                    //Listener para que la calcu detecte las teclas o clicks sobre la interface
+                    boton.addActionListener(this);
 
-                    // Reseteo a los calores iniciales depués de haber agregado el 0 o el =
+
+                    // Reseteo a los valores iniciales depués de haber agregado el 0 o el =
                     gbc.gridwidth = 1;
                     gbc.gridheight = 1;
                 }
@@ -61,6 +66,24 @@ public class calculadora extends Frame implements ActionListener {
         setSize(300, 400);
         setResizable(false);
         setVisible(true);
+
+        //Agrego el keyListener al visor que contiene la función para detectar si se presiona una tecla
+        visor.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                char tecla = e.getKeyChar();
+                // Si es número o punto
+                if (Character.isDigit(tecla) || tecla == '.') {
+                    //agregarAlVisor(String.valueOf(tecla));
+                } else if (tecla == '+' || tecla == '-' || tecla == '*' || tecla == '/') {
+                    //procesarOperacion(String.valueOf(tecla));
+                } else if (tecla == '\n' || tecla == '=') {
+                    //calcularResultado();
+                } else if (tecla == 'c' || tecla == 'C') {
+                    //limpiarTodo();
+                }
+            }
+        });
+        
 
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
