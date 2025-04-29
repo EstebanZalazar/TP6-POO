@@ -2,6 +2,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class calculadora extends Frame implements ActionListener {
+    //Creo las variables a utilizar
+    TextField visor;
+    String operador = "";
+    double acumulador = 0;
+    boolean nuevoNumero = true;
+
     public calculadora(){
         //Título del Frame y tipo de layouta
         setTitle("Calculadora");
@@ -12,8 +18,8 @@ public class calculadora extends Frame implements ActionListener {
         gbc.weightx = 1.0; //Escala en la que se expanden los botones en eje x
         gbc.weighty = 1.0; //Escala en la que se expanden los botones en eje y
         gbc.insets = new Insets(5, 5, 5, 5); // Margen entre botones
-        //Creo el visor
-        TextField visor = new TextField("0");
+        //Modifico el visor
+        visor = new TextField("0");
         visor.setEditable(false);
         visor.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.gridx = 0;
@@ -25,7 +31,8 @@ public class calculadora extends Frame implements ActionListener {
         gbc.gridx = 4;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
-        add(new Button("<<"), gbc);
+        Button borrar = new Button("←");
+        add(borrar, gbc);
         //Uso una grilla de 4x5 para el resto de los botones
         String[][] botones = {
             {"7", "8", "9", "/", "CE"},
@@ -43,8 +50,7 @@ public class calculadora extends Frame implements ActionListener {
                     gbc.gridy = fila + 1; // +1 porque el visor está en fila 0
                     gbc.gridwidth = 1;
                     gbc.gridheight = 1;
-
-                    // Casos especialesn del 0 y el =
+                    // Casos especiales del 0 y el =
                     if (etiqueta.equals("=")) {
                         gbc.gridheight = 2; // "=" ocupa 2 filas
                     } else if (etiqueta.equals("0")) {
@@ -62,35 +68,80 @@ public class calculadora extends Frame implements ActionListener {
                 }
             }
         }
-        //Configuro la ventana
-        setSize(300, 400);
-        setResizable(false);
-        setVisible(true);
-
         //Agrego el keyListener al visor que contiene la función para detectar si se presiona una tecla
         visor.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 char tecla = e.getKeyChar();
                 // Si es número o punto
                 if (Character.isDigit(tecla) || tecla == '.') {
-                    //agregarAlVisor(String.valueOf(tecla));
+                    agregarAlVisor(String.valueOf(tecla));
                 } else if (tecla == '+' || tecla == '-' || tecla == '*' || tecla == '/') {
-                    //procesarOperacion(String.valueOf(tecla));
+                    procesarOperacion(String.valueOf(tecla));
                 } else if (tecla == '\n' || tecla == '=') {
-                    //calcularResultado();
+                    calcularResultado();
                 } else if (tecla == 'c' || tecla == 'C') {
-                    //limpiarTodo();
+                    limpiarTodo();
                 }
             }
         });
-        
-
+        //Configuro la ventana
+        setSize(300, 400);
+        setResizable(false);
+        setVisible(true);
+        //Agrego el windows listener
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent e) {
                 System.exit(0);
             }
         });
     }
+    //Lógica de la calculadora
+    //variables a usar
+    void agregarAlVisor(String valor) {
+        if (nuevoNumero || visor.getText().equals("0")) {
+            visor.setText(valor);
+            nuevoNumero = false;
+        } else {
+            visor.setText(visor.getText() + valor);
+        }
+    }    
+
+    void procesarOperacion(String op) {
+        acumulador = Double.parseDouble(visor.getText());
+        operador = op;
+        nuevoNumero = true;
+    }
+
+    void calcularResultado() {
+        double actual = Double.parseDouble(visor.getText());
+        double resultado = switch (operador) {
+            case "+" -> acumulador + actual;
+            case "-" -> acumulador - actual;
+            case "*" -> acumulador * actual;
+            case "/" -> actual != 0 ? acumulador / actual : 0;
+            default -> actual;
+        };
+        visor.setText(String.valueOf(resultado));
+        acumulador = resultado;
+        nuevoNumero = true;
+    }
+
+    void limpiarTodo() {
+        visor.setText("0");
+        acumulador = 0;
+        operador = "";
+       nuevoNumero = true;
+    }
+
+    void borrarUltimo() {
+        String texto = visor.getText();
+        if (texto.length() > 1) {
+            visor.setText(texto.substring(0, texto.length() - 1));
+        } else {
+            visor.setText("0");
+        }
+    }
+
 
     public void actionPerformed (ActionEvent evt){}
     public static void main (String[] Args){
