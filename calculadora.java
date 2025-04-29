@@ -31,7 +31,7 @@ public class calculadora extends Frame implements ActionListener {
         gbc.gridx = 4;
         gbc.gridy = 0;
         gbc.gridwidth = 1;
-        Button borrar = new Button("←");
+        Button borrar = new Button("<<");
         add(borrar, gbc);
         //Uso una grilla de 4x5 para el resto de los botones
         String[][] botones = {
@@ -95,6 +95,21 @@ public class calculadora extends Frame implements ActionListener {
             }
         });
     }
+
+    public void actionPerformed (ActionEvent evt){
+        String cmd = ((Button) evt.getSource()).getLabel();
+        if (cmd.matches("[0-9]") || cmd.equals(".")) {
+            agregarAlVisor(cmd);
+        } else if (cmd.equals("C") || cmd.equals("CE")) {
+            limpiarTodo();
+        } else if (cmd.equals("=")) {
+            calcularResultado();
+        } else if (cmd.equals("<<")) {
+            borrarUltimo();
+        } else {
+            procesarOperacion(cmd);
+        }
+    }
     //Lógica de la calculadora
     //variables a usar
     void agregarAlVisor(String valor) {
@@ -141,9 +156,6 @@ public class calculadora extends Frame implements ActionListener {
             visor.setText("0");
         }
     }
-
-
-    public void actionPerformed (ActionEvent evt){}
     public static void main (String[] Args){
         new calculadora();
     }
